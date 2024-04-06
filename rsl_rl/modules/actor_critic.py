@@ -3,6 +3,7 @@
 
 
 from __future__ import annotations
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -62,7 +63,7 @@ class ActorCritic(nn.Module):
 
         # Action noise
         self.std = nn.Parameter(init_noise_std * torch.ones(num_actions))
-        self.distribution = None
+        self.distribution: Optional[Normal] = None
         # disable args validation for speedup
         Normal.set_default_validate_args = False
 

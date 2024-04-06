@@ -103,6 +103,8 @@ class RolloutStorage:
 
     def compute_returns(self, last_values, gamma, lam):
         advantage = 0
+        # 这里 advantage 的计算公式可以参考 https://hrl.boyuai.com/chapter/2/trpo%E7%AE%97%E6%B3%95/#116-%E5%B9%BF%E4%B9%89%E4%BC%98%E5%8A%BF%E4%BC%B0%E8%AE%A1
+        # for each step i, return[i] = advantage[i] + value. WHY? What does it mean?
         for step in reversed(range(self.num_transitions_per_env)):
             if step == self.num_transitions_per_env - 1:
                 next_values = last_values

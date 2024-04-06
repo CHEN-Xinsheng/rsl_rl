@@ -146,6 +146,7 @@ class OnPolicyRunner:
                 start = stop
                 self.alg.compute_returns(critic_obs)
 
+            # Some local variables CANNOT be nenamed, as they are used in the 'log' function. Such as 'mean_value_loss'
             mean_value_loss, mean_surrogate_loss = self.alg.update()
             stop = time.time()
             learn_time = stop - start
@@ -155,6 +156,8 @@ class OnPolicyRunner:
             if it % self.save_interval == 0:
                 self.save(os.path.join(self.log_dir, f"model_{it}.pt"))
             ep_infos.clear()
+            
+            # What are these lines doing? (Why do we need to store the 'code state'?)
             if it == start_iter:
                 # obtain all the diff files
                 git_file_paths = store_code_state(self.log_dir, self.git_status_repos)
@@ -166,6 +169,7 @@ class OnPolicyRunner:
         self.save(os.path.join(self.log_dir, f"model_{self.current_learning_iteration}.pt"))
 
     def log(self, locs: dict, width: int = 80, pad: int = 35):
+        # 'locs' means 'local variables'
         self.tot_timesteps += self.num_steps_per_env * self.env.num_envs
         self.tot_time += locs["collection_time"] + locs["learn_time"]
         iteration_time = locs["collection_time"] + locs["learn_time"]
@@ -194,6 +198,8 @@ class OnPolicyRunner:
         mean_std = self.alg.actor_critic.std.mean()
         fps = int(self.num_steps_per_env * self.env.num_envs / (locs["collection_time"] + locs["learn_time"]))
 
+        # add scalar(s) to tensorboard.
+        # Usage: to add a point (x, y) in an image, just call 'add_scalar(name_of_image, y, x)'
         self.writer.add_scalar("Loss/value_function", locs["mean_value_loss"], locs["it"])
         self.writer.add_scalar("Loss/surrogate", locs["mean_surrogate_loss"], locs["it"])
         self.writer.add_scalar("Loss/learning_rate", self.alg.learning_rate, locs["it"])

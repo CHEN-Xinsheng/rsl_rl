@@ -80,6 +80,7 @@ class PPO:
         self.transition.critic_observations = critic_obs
         return self.transition.actions
 
+    # Record the transition in 'self.storage'
     def process_env_step(self, rewards, dones, infos):
         self.transition.rewards = rewards.clone()
         self.transition.dones = dones
