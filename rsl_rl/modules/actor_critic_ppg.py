@@ -46,8 +46,8 @@ class ActorCriticPpg(nn.Module):
         self.actor_base = nn.Sequential(*actor_layers)
         
         # In PPG, policy network has two heads: action head and value head
-        self.action_head = nn.Linear(actor_hidden_dims[layer_index], num_actions)
-        self.value_head = nn.Linear(actor_hidden_dims[layer_index], 1)
+        self.action_head = nn.Linear(actor_hidden_dims[-1], num_actions)
+        self.value_head = nn.Linear(actor_hidden_dims[-1], 1)
 
 
         # Value function

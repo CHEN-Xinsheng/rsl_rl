@@ -95,6 +95,12 @@ class PPO:
         self.transition.clear()
         self.actor_critic.reset(dones)
 
+    def update_network_(self, loss):
+        self.optimizer.zero_grad()
+        loss.backward()
+        nn.utils.clip_grad_norm_(self.actor_critic.parameters(), self.max_grad_norm)
+        self.optimizer.step()
+
     def compute_returns(self, last_critic_obs):
         last_values = self.actor_critic.evaluate(last_critic_obs).detach()
         self.storage.compute_returns(last_values, self.gamma, self.lam)
@@ -169,11 +175,12 @@ class PPO:
 
             loss = surrogate_loss + self.value_loss_coef * value_loss - self.entropy_coef * entropy_batch.mean()
 
-            # Gradient step
-            self.optimizer.zero_grad()
-            loss.backward()
-            nn.utils.clip_grad_norm_(self.actor_critic.parameters(), self.max_grad_norm)
-            self.optimizer.step()
+            self.update_network_(loss)
+            # # Gradient step
+            # self.optimizer.zero_grad()
+            # loss.backward()
+            # nn.utils.clip_grad_norm_(self.actor_critic.parameters(), self.max_grad_norm)
+            # self.optimizer.step()
 
             mean_value_loss += value_loss.item()
             mean_surrogate_loss += surrogate_loss.item()

@@ -52,8 +52,9 @@ class PPG:
         schedule="fixed",
         desired_kl=0.01,
         device="cpu",
+        # new parameters for PPG
         beta_clone=1.0,
-        num_policy_updates_per_aux: int = 32,  # N_pi
+        num_policy_updates_per_aux: int = 16,  # N_pi
     ):
         self.device = device
 
@@ -311,7 +312,8 @@ class PPG:
         # Aux phase update
         self.update_cnt += 1
         if self.update_cnt % self.num_policy_updates_per_aux == 0:
-            self.update_aux()
+            # self.update_aux()
+            self.aux_memories = []
         
 
         return mean_value_loss, mean_surrogate_loss
